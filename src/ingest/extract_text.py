@@ -53,17 +53,36 @@ def extract_pdf(pdf_path, anumber: str):
     return rows
 
 
+ANUM_RE = re.compile(r"[Aa](\d{5,6})")
+
+
+def find_anumber(pdf_path) -> str | None:
+    """Pull the WAMEX A-number from the filename or any parent folder name."""
+    for part in (pdf_path.name, *[p.name for p in pdf_path.parents]):
+        m = ANUM_RE.search(part)
+        if m:
+            return m.group(1)
+    return None
+
+
 def main() -> None:
-    pdfs = sorted(C.RAW.glob("A*/**/*.pdf"))
+    pdfs = sorted(C.RAW.glob("**/*.pdf"))   # any layout: flat files or A<num>/ folders
     if not pdfs:
-        print(f"No PDFs found under {C.RAW}\\A<anumber>\\ — download a report first.")
+        print(f"No PDFs found under {C.RAW} — download a report first.")
         return
 
-    all_rows, n_reports = [], set()
+    all_rows, seen, skipped = [], set(), []
     for pdf in pdfs:
-        anumber = pdf.relative_to(C.RAW).parts[0].lstrip("Aa")
-        n_reports.add(anumber)
+        anumber = find_anumber(pdf)
+        if anumber is None:
+            skipped.append((pdf.name, "no A-number in name"))
+            continue
+        if anumber in seen:
+            skipped.append((pdf.name, f"duplicate of A{anumber}"))
+            continue
+        seen.add(anumber)
         all_rows.extend(extract_pdf(pdf, anumber))
+    n_reports = seen
 
     with OUT.open("w", encoding="utf-8") as fh:
         for r in all_rows:
@@ -74,10 +93,14 @@ def main() -> None:
     img_only = sum(r["image_only"] for r in all_rows)
     mean_alpha = sum(r["alpha_ratio"] for r in all_rows) / n_pages
     mean_word = sum(r["wordlike_ratio"] for r in all_rows) / n_pages
-    print(f"[ok] {len(pdfs)} PDF(s) across {len(n_reports)} report(s) -> {n_pages} pages")
+    print(f"[ok] {len(n_reports)} unique report(s) -> {n_pages} pages")
     print(f"     image-only pages (need OCR): {img_only} ({img_only/n_pages*100:.0f}%)")
     print(f"     mean alpha-ratio {mean_alpha:.2f} | mean word-like ratio {mean_word:.2f}")
     print(f"     wrote {OUT}")
+    if skipped:
+        print(f"     skipped {len(skipped)} file(s):")
+        for name, why in skipped:
+            print(f"       - {name}  ({why})")
 
 
 if __name__ == "__main__":
