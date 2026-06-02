@@ -56,11 +56,18 @@ data out of inconsistent tables, and (c) being able to *cite* exactly where an a
   conceptual "style of mineralisation at Binduli" — all methods missed in top-10 (answer buried on
   a conclusion page; query/phrasing mismatch) -> motivates query expansion / better chunking.
 
-## Phase 5 — Structured extraction
-- Pull assay values (e.g. "3 m @ 5.2 g/t Au"), depths/intervals, and coordinates out of
-  inconsistent text/tables into a clean schema (report, hole, from, to, grade, element, x, y).
-- Enables the real query: "gold intercepts near these coordinates" via spatial filter + retrieval.
-- **Teaching note:** this is the "translate messy data into usable model inputs" requirement, literal.
+## Phase 5 — Structured extraction ✅
+- `src/extract/intercepts.py`: regex extractor handling the corpus's format variants (@/at,
+  g/t with/without space, decimal depths, from-to or single depth). Self-tested on known strings.
+  -> data/processed/intercepts.csv: 699 intercepts from 12 reports (519 with hole id, 62 with
+  depth interval — depths usually live in tables, not prose: an honest limitation).
+- `src/extract/near.py`: joins intercepts to report centroids, haversine filter by distance +
+  grade, dedupes cross-page restatements, returns rows WITH citations (A-number + page).
+  Demo: 148 intercepts >=5 g/t within 30 km of Kalgoorlie, top 62.1 g/t [A138136 p54].
+- Caveat: location granularity = report footprint centroid, not drill collar (collar coords need
+  the drill CSVs). Extraction precision spot-checked OK; formal precision/recall vs the drill CSV
+  is the rigorous follow-up.
+- **Teaching note:** the "translate messy data into usable model inputs" requirement, literal.
 
 ## Phase 6 — Answer synthesis with citations (LLM, deferred)
 - Compose answers from retrieved chunks with inline source citations (A-number + page).
