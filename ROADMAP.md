@@ -35,11 +35,14 @@ data out of inconsistent tables, and (c) being able to *cite* exactly where an a
 - **Teaching note:** these are clean digital PDFs; we still want an older SCANNED report later to
   exercise real OCR-garbage handling (broken words, merged columns).
 
-## Phase 3 — Chunking, embeddings & retrieval
-- Chunking strategy for technical docs (size/overlap; respect page + section boundaries).
-- Local embeddings (sentence-transformers) -> vector index (faiss).
-- Hybrid retrieval: semantic (embeddings) + lexical (BM25) — lexical matters because assay codes,
-  element symbols and tenement IDs are exact-match tokens embeddings handle poorly.
+## Phase 3 — Chunking, embeddings & retrieval ✅
+- `src/index/chunk.py`: page-bounded word chunks (size 350 / overlap 60) with chunk_id +
+  anumber + page provenance. 543 pages -> 661 chunks.
+- `src/index/build_index.py`: local embeddings (BAAI/bge-small-en-v1.5, 384-dim) -> FAISS
+  inner-product (cosine) index. Persists chunks.jsonl + faiss.index.
+- `src/index/retrieve.py`: HYBRID retrieval = semantic (FAISS) + lexical (BM25), fused with
+  Reciprocal Rank Fusion. Demonstrated: semantic found "PBNC1322 ... 6 m @ 4.41 g/t Au from 45 m"
+  by meaning; lexical nailed exact tenement IDs (P26/4224). Each hit tagged S / L / S+L.
 
 ## Phase 4 — Retrieval evaluation (the part most RAG demos skip)
 - Build a small labelled eval set (questions -> which report/page truly answers them).
