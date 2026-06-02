@@ -44,10 +44,17 @@ data out of inconsistent tables, and (c) being able to *cite* exactly where an a
   Reciprocal Rank Fusion. Demonstrated: semantic found "PBNC1322 ... 6 m @ 4.41 g/t Au from 45 m"
   by meaning; lexical nailed exact tenement IDs (P26/4224). Each hit tagged S / L / S+L.
 
-## Phase 4 — Retrieval evaluation (the part most RAG demos skip)
-- Build a small labelled eval set (questions -> which report/page truly answers them).
-- Metrics: recall@k, MRR — "did the right source make it into the top-k?", not "did it answer".
-- Compare semantic vs lexical vs hybrid; pick what actually works on this corpus.
+## Phase 4 — Retrieval evaluation (the part most RAG demos skip) ✅
+- `src/eval/questions.jsonl`: 18 labelled questions (intercepts, exact-ID lookups, project-name
+  lookups, conceptual), each with a `verify` regex fingerprint of the answer. Label sanity-checked
+  against the corpus.
+- `src/eval/evaluate.py`: recall@k + MRR for semantic vs lexical vs hybrid (RRF).
+  RESULT: MRR semantic 0.714 / lexical 0.817 / HYBRID 0.852; R@1 0.67 / 0.72 / 0.78.
+- Findings: lexical is a strong baseline here (corpus facts are exact tokens — tenement IDs,
+  drill-hole codes); semantic alone fumbles exact IDs (missed E15/2013, ranked Kanowna Lights 8th)
+  but hybrid recovers them AND lifts fuzzy cases (PBND0226 4th/5th -> 1st). One honest miss: the
+  conceptual "style of mineralisation at Binduli" — all methods missed in top-10 (answer buried on
+  a conclusion page; query/phrasing mismatch) -> motivates query expansion / better chunking.
 
 ## Phase 5 — Structured extraction
 - Pull assay values (e.g. "3 m @ 5.2 g/t Au"), depths/intervals, and coordinates out of

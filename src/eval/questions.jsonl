@@ -1,0 +1,18 @@
+{"id": 1, "kind": "intercept", "question": "What gold grade and interval did drill hole PBNC1322 return?", "anumber": "138136", "verify": "PBNC1322"}
+{"id": 2, "kind": "intercept", "question": "What was the highest-grade gold intersection from drill hole PBND0204?", "anumber": "138136", "verify": "PBND0204"}
+{"id": 3, "kind": "intercept", "question": "What interval and grade did drill hole PBNC1285 intersect?", "anumber": "138136", "verify": "PBNC1285"}
+{"id": 4, "kind": "intercept", "question": "What did drill hole PBNC1241 intersect at the Apache prospect?", "anumber": "138136", "verify": "PBNC1241"}
+{"id": 5, "kind": "intercept", "question": "What gold intercept did drill hole PBND0226 return?", "anumber": "138136", "verify": "PBND0226"}
+{"id": 6, "kind": "id_lookup", "question": "Which company holds tenement E15/2013?", "anumber": "147979", "verify": "E\\s*15/2013"}
+{"id": 7, "kind": "id_lookup", "question": "Who is the holder of tenement M24/604 in the Ora Banda project?", "anumber": "147890", "verify": "M\\s*24/604"}
+{"id": 8, "kind": "name_lookup", "question": "Which company holds the Kanowna East project tenement?", "anumber": "146096", "verify": "E\\s*27/596"}
+{"id": 9, "kind": "name_lookup", "question": "Who holds the Camel Pad tenement near Mungari?", "anumber": "148622", "verify": "M\\s*15/1822"}
+{"id": 10, "kind": "name_lookup", "question": "Which company holds the Lakewood project tenement?", "anumber": "153845", "verify": "E\\s*26/209"}
+{"id": 11, "kind": "name_lookup", "question": "Who is the holder of the Kanowna Lights tenement?", "anumber": "138462", "verify": "M\\s*27/177"}
+{"id": 12, "kind": "name_lookup", "question": "Which company holds the Carnage project tenement?", "anumber": "139037", "verify": "P\\s*24/4827"}
+{"id": 13, "kind": "id_lookup", "question": "Who holds tenement E27/545 at Silver Swan South?", "anumber": "140611", "verify": "E\\s*27/545"}
+{"id": 14, "kind": "name_lookup", "question": "Which company holds the King of the West tenement?", "anumber": "150494", "verify": "E\\s*27/614"}
+{"id": 15, "kind": "name_lookup", "question": "Who holds the Star Well tenement in the Zuleika project?", "anumber": "145723", "verify": "P\\s*16/3026"}
+{"id": 16, "kind": "conceptual", "question": "What style of gold mineralisation hosts the deposits at the Binduli project?", "anumber": "138136", "verify": "sheared and bedded"}
+{"id": 17, "kind": "conceptual", "question": "What type of drilling was carried out at the Josephine prospect?", "anumber": "145369", "verify": "Josephine"}
+{"id": 18, "kind": "intercept", "question": "What was the peak gold result reported on the Fimiston tenement P26/4224?", "anumber": "148653", "verify": "0\\.09\\s*g/t"}
