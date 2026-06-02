@@ -1,0 +1,9 @@
+.venv/
+data/raw/
+data/interim/
+data/processed/
+outputs/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.faiss
