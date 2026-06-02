@@ -17,19 +17,23 @@ data out of inconsistent tables, and (c) being able to *cite* exactly where an a
 - venv + RAG stack (sentence-transformers, faiss, pymupdf/pdfplumber, rank-bm25)
 - project skeleton, config, git
 
-## Phase 1 — Data acquisition
-- Query the WAMEX spatial index (report footprints) for our Eastern Goldfields bbox.
-- Download a tractable slice (~tens of reports) of public PDFs + their metadata (A-number,
-  title, commodity, year, tenement, geometry). Keep raw PDFs in data/raw (gitignored).
-- **Teaching note:** reports are huge and messy; we pick a focused slice so we spend effort on
-  RAG, not on babysitting gigabytes.
+## Phase 1 — Data acquisition ✅
+- `src/ingest/fetch_metadata.py` queries the WAMEX spatial index (ArcGIS layer via SLIP) for the
+  gold / Eastern-Goldfields slice -> data/raw/report_index.csv (30 reports: A-number, title, year,
+  operator, commodity, abstract, centroid, details URL). 391 matched; capped to 30.
+- Downloads: public path is a per-document signed URL (uploads.dmp.wa.gov.au/.../{anumber}?
+  groupAccessToken=...). No clean A-number->URL pattern (tokens are server-issued), so PDFs are
+  fetched manually by clicking "Download" on the ReportDetails page. Two reports in so far:
+  A148715 (Kanowna Belle) + A148653 (Fimiston / Super Pit), both Northern Star.
 
-## Phase 2 — Ingestion & text extraction
-- Extract the existing OCR text layer per page (pymupdf); fall back to flagging image-only pages.
-- Keep page-level provenance (report A-number + page number) on every piece of text — this is
-  what makes citations possible later.
-- **Teaching note:** confront OCR garbage head-on — broken words, merged columns, table soup.
-  Measure how bad it is rather than pretending it's clean.
+## Phase 2 — Ingestion & text extraction ✅
+- `src/ingest/extract_text.py` -> data/interim/pages.jsonl (one record/page with anumber+file+page
+  provenance for citations). OCR-quality signals per page (alpha-ratio, word-likeness, image-only).
+- Result on the 2 reports: 28 pages, 0% image-only (digital text layer), alpha-ratio 0.85.
+  Found real intercepts in prose ("0.65 m at 0.09 g/t Au from 44.35 m"), drill IDs (FRGD00x).
+  Detailed assay tables live in side-car ZIPs (later "fuse CSVs" enhancement).
+- **Teaching note:** these are clean digital PDFs; we still want an older SCANNED report later to
+  exercise real OCR-garbage handling (broken words, merged columns).
 
 ## Phase 3 — Chunking, embeddings & retrieval
 - Chunking strategy for technical docs (size/overlap; respect page + section boundaries).
